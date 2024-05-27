@@ -11,6 +11,8 @@ public class Order
 
     public string Status { get; set; } = "Pending...";
 
+    public string PaymentMethod { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

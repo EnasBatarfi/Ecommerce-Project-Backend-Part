@@ -5,6 +5,7 @@ using Backend.Helpers;
 using Backend.Models;
 using Microsoft.IdentityModel.Tokens;
 using Backend.Dtos;
+using SendGrid.Helpers.Errors.Model;
 
 namespace Backend.Services;
 
@@ -64,6 +65,71 @@ public class ProductService
         }
 
         // Pagination (remains the same)
+        return await query
+            .Include(r => r.Reviews) // Include relations
+            .Include(op => op.OrderProducts)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Product>> GetAllCategoryProductService(
+     string categorySlug,
+     int pageNumber,
+     int pageSize,
+     string? searchTerm,
+     string? sortBy,
+     string? sortOrder,
+     decimal? minPrice,
+     decimal? maxPrice
+ )
+    {
+        var query = _dbContext.Products.AsQueryable();
+        var categoryQuery = _dbContext.Categories.AsQueryable();
+
+        // Apply category filtering
+        var category = await categoryQuery.FirstOrDefaultAsync(c => c.Slug.ToLower() == categorySlug.ToLower());
+        if (category == null)
+        {
+            throw new NotFoundException($"No Category Found With Slug: {categorySlug}");
+        }
+        query = query.Where(p => p.CategoryId == category.CategoryId);
+
+        // Apply filtering
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            query = query.Where(p => p.Name.Contains(searchTerm) || p.Description.Contains(searchTerm));
+        }
+
+        if (minPrice.HasValue)
+        {
+            query = query.Where(p => p.Price >= minPrice.Value);
+        }
+
+        if (maxPrice.HasValue)
+        {
+            query = query.Where(p => p.Price <= maxPrice.Value);
+        }
+
+        // Apply Sorting
+        if (!string.IsNullOrEmpty(sortBy))
+        {
+            if (sortOrder == "asc")
+            {
+                query = query.OrderBy(GetSortExpression(sortBy));
+            }
+            else // 'desc' as default if not provided
+            {
+                query = query.OrderByDescending(GetSortExpression(sortBy));
+            }
+        }
+        else
+        {
+            // Default sorting (by name)
+            query = query.OrderBy(x => x.Name);
+        }
+
+        // Pagination
         return await query
             .Include(r => r.Reviews) // Include relations
             .Include(op => op.OrderProducts)

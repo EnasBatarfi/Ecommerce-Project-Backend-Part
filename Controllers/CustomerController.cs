@@ -66,7 +66,7 @@ public class CustomerController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("register")]
-    public async Task<IActionResult> CreateCustomer(Customer newCustomer)
+    public async Task<IActionResult> CreateCustomer([FromBody] Customer newCustomer)
     {
         var createdCustomer = await _customerService.CreateCustomerService(newCustomer) ?? throw new Exception("Email already exists");
 
@@ -84,10 +84,10 @@ public class CustomerController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> LoginCustomer([FromBody] LoginUserDto loginUserDto)
     {
-        var LoggedCustomer = await _customerService.LoginCustomerService(loginUserDto) ?? throw new UnauthorizedException("Invalid Email or Password");
+        var loggedCustomer = await _customerService.LoginCustomerService(loginUserDto) ?? throw new UnauthorizedException("Invalid Email or Password");
 
-        var token = _authService.GenerateJwtToken(LoggedCustomer);
-        return ApiResponse.Success(LoggedCustomer, "Customer is loggedIn successfully", null, token);
+        var token = _authService.GenerateJwtToken(loggedCustomer);
+        return ApiResponse.Success(loggedCustomer, "Customer is loggedIn successfully", null, token);
     }
 
 

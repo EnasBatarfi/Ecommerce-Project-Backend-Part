@@ -56,6 +56,39 @@ public class ProductController : ControllerBase
 
 
     [AllowAnonymous]
+    [HttpGet("category/{categorySlug}")]
+    public async Task<IActionResult> GetAllCategoryProducts(
+        string categorySlug,
+        int pageNumber = 1,
+        int pageSize = 10,
+        string? searchTerm = null,
+        string? sortBy = null,
+        string? sortOrder = null,
+        decimal? minPrice = null,
+        decimal? maxPrice = null
+    )
+    {
+        var products = await _productService.GetAllCategoryProductService(categorySlug, pageNumber, pageSize, searchTerm, sortBy, sortOrder, minPrice, maxPrice);
+        int totalCount = await _productService.GetTotalProductCount();
+        if (totalCount < 1)
+        {
+            throw new NotFoundException("No Products To Display");
+        }
+        return ApiResponse.Success
+        (
+            products,
+            "Products are returned successfully",
+            new PaginationMeta
+            {
+                CurrentPage = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            }
+        );
+    }
+
+
+    [AllowAnonymous]
     [HttpGet("{productId:guid}")]
     public async Task<IActionResult> GetProduct(Guid productId)
     {

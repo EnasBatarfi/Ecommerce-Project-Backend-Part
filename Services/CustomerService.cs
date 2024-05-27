@@ -92,6 +92,7 @@ public class CustomerService
     public async Task<Customer?> UpdateCustomerService(Guid customerId, CustomerDto updateCustomer)
     {
         var existingCustomer = await _dbContext.Customers.FindAsync(customerId);
+        // var isEmailUsed = await IsEmailExists(updateCustomer.Email);
         if (existingCustomer != null)
         {
             existingCustomer.FirstName = updateCustomer.FirstName.IsNullOrEmpty() ? existingCustomer.FirstName : updateCustomer.FirstName;

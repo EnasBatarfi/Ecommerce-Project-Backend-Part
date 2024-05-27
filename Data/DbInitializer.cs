@@ -1,587 +1,300 @@
 using Microsoft.AspNetCore.Identity;
 using Backend.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Backend.Data;
-
-public class DbInitializer
+namespace Backend.Data
 {
-    private readonly IPasswordHasher<Admin> _passwordHasher;
-
-    public DbInitializer(IPasswordHasher<Admin> passwordHasher)
+    public class DbInitializer
     {
-        _passwordHasher = passwordHasher;
-    }
+        private readonly IPasswordHasher<Admin> _passwordHasher;
 
-    public async Task InitializeAsync(AppDbContext context, IServiceProvider serviceProvider)
-    {
-        context.Database.EnsureCreated();
-
-        // if no admins found add these
-        if (!context.Admins.Any())
+        public DbInitializer(IPasswordHasher<Admin> passwordHasher)
         {
-            var admins = new Admin[]
+            _passwordHasher = passwordHasher;
+        }
+
+        public async Task InitializeAsync(AppDbContext context, IServiceProvider serviceProvider)
+        {
+            context.Database.EnsureCreated();
+
+            // if no admins found add these
+            if (!context.Admins.Any())
             {
-                new Admin
+                var admins = new Admin[]
                 {
-                    AdminId = Guid.Parse("02c18f24-d667-4c07-8c4f-454dea50c115"),
-                    FirstName = "Mohammad",
-                    LastName = "Alkhamis",
-                    Email = "moh@example.com",
-                    Image = "moh.webp",
-                    Mobile = "966554556677",
-                    CreatedAt = new DateTime(2024, 4, 28, 11, 35, 0, DateTimeKind.Utc),
-                    Password = _passwordHasher.HashPassword(null, "Test@123")
-                },
-                new Admin
+                    new Admin
+                    {
+                        AdminId = Guid.Parse("02c18f24-d667-4c07-8c4f-454dea50c115"),
+                        FirstName = "Mohammad",
+                        LastName = "Alkhamis",
+                        Email = "mohammad@example.com",
+                        Image = "mohammad.webp",
+                        Mobile = "966554556677",
+                        CreatedAt = new DateTime(2024, 4, 28, 11, 35, 0, DateTimeKind.Utc),
+                        Password = _passwordHasher.HashPassword(null, "Test@123")
+                    },
+                    new Admin
+                    {
+                        AdminId = Guid.Parse("03c18f24-d667-4c07-8c4f-454dea50c115"),
+                        FirstName = "Enas",
+                        LastName = "Batarfi",
+                        Email = "enas@example.com",
+                        Image = "enas.webp",
+                        Mobile = "966554556677",
+                        CreatedAt = new DateTime(2024, 4, 29, 15, 44, 22, DateTimeKind.Utc),
+                        Password = _passwordHasher.HashPassword(null, "Test@123")
+                    },
+                    new Admin
+                    {
+                        AdminId = Guid.Parse("04c18f24-d667-4c07-8c4f-454dea50c115"),
+                        FirstName = "Ahad",
+                        LastName = "Nasser",
+                        Email = "ahad@example.com",
+                        Image = "ahad.webp",
+                        Mobile = "966554556677",
+                        CreatedAt = new DateTime(2024, 4, 28, 8, 18, 32, DateTimeKind.Utc),
+                        Password = _passwordHasher.HashPassword(null, "Test@123")
+                    },
+                    new Admin
+                    {
+                        AdminId = Guid.Parse("05c18f24-d667-4c07-8c4f-454dea50c115"),
+                        FirstName = "Shahad",
+                        LastName = "Draim",
+                        Email = "shahad@example.com",
+                        Image = "shahad.webp",
+                        Mobile = "966554556677",
+                        CreatedAt = new DateTime(2024, 4, 30, 18, 55, 55, DateTimeKind.Utc),
+                        Password = _passwordHasher.HashPassword(null, "Test@123")
+                    }
+                };
+
+                foreach (Admin admin in admins)
                 {
-                    AdminId = Guid.Parse("03c18f24-d667-4c07-8c4f-454dea50c115"),
-                    FirstName = "Enas",
-                    LastName = "Batarfi",
-                    Email = "enas@example.com",
-                    Image = "enas.webp",
-                    Mobile = "966554556677",
-                    CreatedAt = new DateTime(2024, 4, 29, 15, 44, 22, DateTimeKind.Utc),
-                    Password = _passwordHasher.HashPassword(null, "Test@123")
-                },
-                new Admin
-                {
-                    AdminId = Guid.Parse("04c18f24-d667-4c07-8c4f-454dea50c115"),
-                    FirstName = "Ahad",
-                    LastName = "Nasser",
-                    Email = "ahad@example.com",
-                    Image = "ahad.webp",
-                    Mobile = "966554556677",
-                    CreatedAt = new DateTime(2024, 4, 28, 8, 18, 32, DateTimeKind.Utc),
-                    Password = _passwordHasher.HashPassword(null, "Test@123")
-                },
-                new Admin
-                {
-                    AdminId = Guid.Parse("05c18f24-d667-4c07-8c4f-454dea50c115"),
-                    FirstName = "Shahad",
-                    LastName = "Draim",
-                    Email = "shahad@example.com",
-                    Image = "shahad.webp",
-                    Mobile = "966554556677",
-                    CreatedAt = new DateTime(2024, 4, 30, 18, 55, 55, DateTimeKind.Utc),
-                    Password = _passwordHasher.HashPassword(null, "Test@123")
+                    context.Admins.Add(admin);
                 }
-            };
-
-            foreach (Admin admin in admins)
-            {
-                context.Admins.Add(admin);
             }
-        }
 
-        //
-        // if no customers found add these
-        if (!context.Customers.Any())
-        {
-            var customers = new Customer[]
+            // if no customers found add these
+            if (!context.Customers.Any())
             {
-                new Customer
+                var customers = new List<Customer>();
+                for (int i = 1; i <= 20; i++)
                 {
-                    CustomerId = Guid.Parse("feee9ca6-fd69-46cf-a990-64db26780922"),
-                    FirstName = "Marim",
-                    LastName = "Ahmad",
-                    Email = "marim@example.com",
-                    Image = "image.webp",
-                    Mobile = "966554556677",
-                    CreatedAt = new DateTime(2024, 5, 1, 12, 12, 12, DateTimeKind.Utc),
-                    Password = _passwordHasher.HashPassword(null, "Test@123")
-                },
-                new Customer
-                {
-                    CustomerId = Guid.Parse("12295810-446c-4ef3-b5f9-8b7ec0a81e88"),
-                    FirstName = "Nora",
-                    LastName = "Faisal",
-                    Email = "nora@example.com",
-                    Image = "image.webp",
-                    Mobile = "966554556677",
-                    CreatedAt = new DateTime(2024, 5, 1, 12, 12, 12, DateTimeKind.Utc),
-                    Password = _passwordHasher.HashPassword(null, "Test@123")
-                },
-                new Customer
-                {
-                    CustomerId = Guid.Parse("a470781d-df28-4a68-b5f4-9b259b4b69d9"),
-                    FirstName = "Fahad",
-                    LastName = "Abdulrahman",
-                    Email = "fahad@example.com",
-                    Image = "image.webp",
-                    Mobile = "966554556677",
-                    CreatedAt = new DateTime(2024, 5, 1, 12, 12, 12, DateTimeKind.Utc),
-                    Password = _passwordHasher.HashPassword(null, "Test@123")
-                },
-                new Customer
-                {
-                    CustomerId = Guid.Parse("cb45d6e0-b134-491a-8968-9f27fc5c4c37"),
-                    FirstName = "Somyia",
-                    LastName = "Saad",
-                    Email = "somyia@example.com",
-                    Image = "image.webp",
-                    Mobile = "966554556677",
-                    CreatedAt = new DateTime(2024, 5, 1, 12, 12, 12, DateTimeKind.Utc),
-                    Password = _passwordHasher.HashPassword(null, "Test@123")
+                    customers.Add(new Customer
+                    {
+                        CustomerId = Guid.NewGuid(),
+                        FirstName = $"CustomerFirstName{i}",
+                        LastName = $"CustomerLastName{i}",
+                        Email = $"customer{i}@example.com",
+                        Image = $"customer{i}.webp",
+                        Mobile = $"96655455{i:D4}",
+                        CreatedAt = new DateTime(2024, 5, 1, 12, 12, 12, DateTimeKind.Utc),
+                        Password = _passwordHasher.HashPassword(null, "Test@123")
+                    });
                 }
-            };
 
-            foreach (Customer customer in customers)
-            {
-                context.Customers.Add(customer);
-            }
-        }
-
-        //
-        // // if no customers found add these
-        if (!context.Addresses.Any())
-        {
-            var addresses = new Address[]
-            {
-                new Address
+                foreach (Customer customer in customers)
                 {
-                    AddressId = Guid.Parse("9d358843-fd84-4af3-b486-fa8725c8af42"),
-                    Name = "Home",
-                    AddressLine1 = "123 Maple Street",
-                    AddressLine2 = "Apt 301",
-                    Country = "Saudi Arabia",
-                    Province = "Central",
-                    City = "Riyadh",
-                    ZipCode = "90001",
-                    CustomerId = Guid.Parse("feee9ca6-fd69-46cf-a990-64db26780922")
-                },
-                new Address
-                {
-                    AddressId = Guid.Parse("76f4d253-2171-4985-8c9e-f1979423ebc8"),
-                    Name = "Work",
-                    AddressLine1 = "456 Oak Avenue",
-                    AddressLine2 = "",
-                    Country = "Saudi Arabia",
-                    Province = "Central",
-                    City = "Riyadh",
-                    ZipCode = "10001",
-                    CustomerId = Guid.Parse("feee9ca6-fd69-46cf-a990-64db26780922")
-                },
-                new Address
-                {
-                    AddressId = Guid.Parse("d4b782fb-9f62-4258-9d16-0e673268945e"),
-                    Name = "My house address",
-                    AddressLine1 = "789 Elm Street",
-                    AddressLine2 = "Suite 102",
-                    Country = "Saudi Arabia",
-                    Province = "Eastern",
-                    City = "Dammam",
-                    ZipCode = "77002",
-                    CustomerId = Guid.Parse("a470781d-df28-4a68-b5f4-9b259b4b69d9")
-                },
-                new Address
-                {
-                    AddressId = Guid.Parse("fb639447-d196-4de4-b03d-6bcc3ca000e4"),
-                    Name = "My Work Address",
-                    AddressLine1 = "321 Pine Avenue",
-                    AddressLine2 = "Apt 10B",
-                    Country = "Saudi Arabia",
-                    Province = "Central",
-                    City = "Riyadh",
-                    ZipCode = "33101",
-                    CustomerId = Guid.Parse("a470781d-df28-4a68-b5f4-9b259b4b69d9")
-                },
-                new Address
-                {
-                    AddressId = Guid.Parse("c13854e7-aab7-4e5f-88dd-8a701924d80b"),
-                    Name = "Work",
-                    AddressLine1 = "567 Cedar Street",
-                    AddressLine2 = "Suite 501",
-                    Country = "Saudi Arabia",
-                    Province = "Central",
-                    City = "Riyadh",
-                    ZipCode = "60601",
-                    CustomerId = Guid.Parse("12295810-446c-4ef3-b5f9-8b7ec0a81e88")
-                },
-                new Address
-                {
-                    AddressId = Guid.Parse("e29e8d72-a949-4fe9-a986-eae03ed2a48f"),
-                    Name = "Home",
-                    AddressLine1 = "901 Walnut Avenue",
-                    AddressLine2 = "",
-                    Country = "Saudi Arabia",
-                    Province = "Western",
-                    City = "Jubail",
-                    ZipCode = "19101",
-                    CustomerId = Guid.Parse("12295810-446c-4ef3-b5f9-8b7ec0a81e88")
-                },
-                new Address
-                {
-                    AddressId = Guid.Parse("e89df668-cef1-402f-88c2-7c00990867aa"),
-                    Name = "Friend's house",
-                    AddressLine1 = "234 Birch Street",
-                    AddressLine2 = "Apt 15C",
-                    Country = "Saudi Arabia",
-                    Province = "Western",
-                    City = "Dammam",
-                    ZipCode = "02101",
-                    CustomerId = Guid.Parse("12295810-446c-4ef3-b5f9-8b7ec0a81e88")
-                },
-                new Address
-                {
-                    AddressId = Guid.Parse("b931adf8-5ae3-41c0-b6d2-c7da06a90b2b"),
-                    Name = "Home 1",
-                    AddressLine1 = "678 Pineapple Avenue",
-                    AddressLine2 = "",
-                    Country = "Saudi Arabia",
-                    Province = "Eastern",
-                    City = "Alhasa",
-                    ZipCode = "32801",
-                    CustomerId = Guid.Parse("feee9ca6-fd69-46cf-a990-64db26780922")
-                },
-                new Address
-                {
-                    AddressId = Guid.Parse("d5c6760b-8563-43e6-950b-2ebdd9ace603"),
-                    Name = "Work 2",
-                    AddressLine1 = "890 Cherry Street",
-                    AddressLine2 = "Suite 401",
-                    Country = "Saudi Arabia",
-                    Province = "Eastern",
-                    City = "Khobar",
-                    ZipCode = "94101",
-                    CustomerId = Guid.Parse("feee9ca6-fd69-46cf-a990-64db26780922")
-                },
-                new Address
-                {
-                    AddressId = Guid.Parse("7a5787cd-2d91-430e-a421-9bd60fa072f1"),
-                    Name = "Home 2",
-                    AddressLine1 = "543 Plum Avenue",
-                    AddressLine2 = "",
-                    Country = "Saudi Arabia",
-                    Province = "Eastern",
-                    City = "Dammam",
-                    ZipCode = "78701",
-                    CustomerId = Guid.Parse("feee9ca6-fd69-46cf-a990-64db26780922")
+                    context.Customers.Add(customer);
                 }
-            };
-
-
-            foreach (Address a in addresses)
-            {
-                context.Addresses.Add(a);
             }
-        }
 
-        //
-        // if no categories found add these
-        if (!context.Categories.Any())
-        {
-            var categories = new Category[]
+            // if no addresses found add these
+            if (!context.Addresses.Any())
             {
-                new Category
+                var addresses = new List<Address>();
+                var customerIds = context.Customers.Select(c => c.CustomerId).ToList();
+
+                foreach (var customerId in customerIds)
                 {
-                    CategoryId = Guid.Parse("bca83459-e31f-4ffc-9573-9245c9cbe6b7"),
-                    Name = "Stickers",
-                    Slug = "stickers",
-                    Description = "All things stickers, awesome, testing",
-                    CreatedAt = new DateTime(2024, 4, 28, 22, 25, 25, DateTimeKind.Utc),
-                    AdminId = Guid.Parse("02c18f24-d667-4c07-8c4f-454dea50c115")
-                },
-                new Category
-                {
-                    CategoryId = Guid.Parse("c94d673b-be8d-4b1f-8a36-cbd6ed765644"),
-                    Name = "Notebooks",
-                    Slug = "notebooks",
-                    Description = "Journals, sketchbooks, planners, and notepads",
-                    CreatedAt = new DateTime(2024, 4, 28, 22, 25, 25, DateTimeKind.Utc),
-                    AdminId = Guid.Parse("02c18f24-d667-4c07-8c4f-454dea50c115")
-                },
-                new Category
-                {
-                    CategoryId = Guid.Parse("9c506bbf-0fd7-43af-9507-40fb32d8bdbd"),
-                    Name = "Pens",
-                    Slug = "pens",
-                    Description = "Fountain pens, ballpoint pens, gel pens, and more!",
-                    CreatedAt = new DateTime(2024, 4, 28, 23, 25, 25, DateTimeKind.Utc),
-                    AdminId = Guid.Parse("02c18f24-d667-4c07-8c4f-454dea50c115")
-                },
-                new Category
-                {
-                    CategoryId = Guid.Parse("fafbdf01-de53-486b-9e4b-5b501cc8369e"),
-                    Name = "Pencils",
-                    Slug = "pencils",
-                    Description = "Mechanical pencils, graphite pencils, colored pencils",
-                    CreatedAt = new DateTime(2024, 4, 28, 22, 25, 25, DateTimeKind.Utc),
-                    AdminId = Guid.Parse("02c18f24-d667-4c07-8c4f-454dea50c115")
+                    for (int i = 1; i <= 2; i++)
+                    {
+                        addresses.Add(new Address
+                        {
+                            AddressId = Guid.NewGuid(),
+                            Name = i == 1 ? "Home" : "Work",
+                            AddressLine1 = $"{i}00 Street Name",
+                            AddressLine2 = $"Apt {i}0{i}",
+                            Country = "Saudi Arabia",
+                            Province = i == 1 ? "Central" : "Eastern",
+                            City = i == 1 ? "Riyadh" : "Dammam",
+                            ZipCode = $"{i}0000",
+                            CustomerId = customerId
+                        });
+                    }
                 }
-            };
 
-            foreach (Category c in categories)
-            {
-                context.Categories.Add(c);
-            }
-        }
-
-        //
-        // if no products found add these
-        if (!context.Products.Any())
-        {
-            var products = new Product[]
-            {
-                new Product
+                foreach (Address address in addresses)
                 {
-                    ProductId = Guid.Parse("7b88a4f8-ee9f-44f7-99ef-e084da0c8ee9"),
-                    Name = "Saudi stickers",
-                    Slug = "saudi-stickers",
-                    Price = 39.9m,
-                    Description = "Saudi related stickers",
-                    StockQuantity = 110,
-                    SKU = "PRO-TES-ING-THIS",
-                    ImgUrl = "product-1.webp",
-                    CreatedAt = new DateTime(2024, 4, 29, 15, 25, 25, DateTimeKind.Utc),
-                    CategoryId = Guid.Parse("bca83459-e31f-4ffc-9573-9245c9cbe6b7"),
-                    AdminId = Guid.Parse("02c18f24-d667-4c07-8c4f-454dea50c115")
-                },
-                new Product
-                {
-                    ProductId = Guid.Parse("4963d195-33e0-4718-9c0c-f7db68678917"),
-                    Name = "Planner Stickers",
-                    Slug = "planner-stickers",
-                    Price = 5.9m,
-                    Description = "Sheet of functional stickers for organizing your planner",
-                    StockQuantity = 110,
-                    SKU = "PRO-TES-ING-THIS",
-                    ImgUrl = "product-1.webp",
-                    CreatedAt = new DateTime(2024, 4, 29, 16, 25, 25, DateTimeKind.Utc),
-                    CategoryId = Guid.Parse("bca83459-e31f-4ffc-9573-9245c9cbe6b7"),
-                    AdminId = Guid.Parse("02c18f24-d667-4c07-8c4f-454dea50c115")
-                },
-                new Product
-                {
-                    ProductId = Guid.Parse("210518cb-b4c4-4d2f-9a53-f6520b534657"),
-                    Name = "Stars Notebooks",
-                    Slug = "stars-notebooks",
-                    Price = 25.5m,
-                    Description = "Notebook will take you to the stars",
-                    StockQuantity = 40,
-                    SKU = "PRO-TES-ING-THIS",
-                    ImgUrl = "product-1.webp",
-                    CreatedAt = new DateTime(2024, 4, 29, 17, 25, 25, DateTimeKind.Utc),
-                    CategoryId = Guid.Parse("c94d673b-be8d-4b1f-8a36-cbd6ed765644"),
-                    AdminId = Guid.Parse("02c18f24-d667-4c07-8c4f-454dea50c115")
-                },
-                new Product
-                {
-                    ProductId = Guid.Parse("33ad3125-c70f-485e-bf32-b90ad76e3ad4"),
-                    Name = "Blue Gel pen",
-                    Slug = "blue-gel-pen",
-                    Price = 35.5m,
-                    Description = "Write your ideas",
-                    StockQuantity = 30,
-                    SKU = "PRO-TES-ING-THIS",
-                    ImgUrl = "product-1.webp",
-                    CreatedAt = new DateTime(2024, 4, 29, 17, 25, 25, DateTimeKind.Utc),
-                    CategoryId = Guid.Parse("9c506bbf-0fd7-43af-9507-40fb32d8bdbd"),
-                    AdminId = Guid.Parse("02c18f24-d667-4c07-8c4f-454dea50c115")
-                },
-                new Product
-                {
-                    ProductId = Guid.Parse("b106d590-002f-4b10-9237-b3954651efd0"),
-                    Name = "Pencil",
-                    Slug = "pencil",
-                    Price = 35.5m,
-                    Description = "Write your ideas",
-                    StockQuantity = 30,
-                    SKU = "PRO-TES-ING-THIS",
-                    ImgUrl = "product-1.webp",
-                    CreatedAt = new DateTime(2024, 4, 29, 17, 25, 25, DateTimeKind.Utc),
-                    CategoryId = Guid.Parse("fafbdf01-de53-486b-9e4b-5b501cc8369e"),
-                    AdminId = Guid.Parse("02c18f24-d667-4c07-8c4f-454dea50c115")
+                    context.Addresses.Add(address);
                 }
-            };
-
-            foreach (Product p in products)
-            {
-                context.Products.Add(p);
             }
-        }
 
-        // if no order products found add these
-        if (!context.OrderProducts.Any())
-        {
-            var orderProducts = new List<OrderProduct>
+            // if no categories found add these
+            if (!context.Categories.Any())
             {
-                // Order 1 Products
-                new OrderProduct
+                var categories = new Category[]
                 {
-                    OrderProductId = Guid.Parse("51f1f3a8-23d2-4c80-b159-88a1ee8f893b"),
-                    ProductId = Guid.Parse("7b88a4f8-ee9f-44f7-99ef-e084da0c8ee9"),
-                    OrderId = Guid.Parse("d043296e-d2d5-4374-88f8-5fe0d6d71e5e"),
-                    ProductPrice = 12m,
-                    Quantity = 2,
-                },
-                new OrderProduct
-                {
-                    OrderProductId = Guid.Parse("6727fb21-4ad2-4ad3-8915-8feee0a3f1aa"),
-                    ProductId = Guid.Parse("4963d195-33e0-4718-9c0c-f7db68678917"),
-                    OrderId = Guid.Parse("d043296e-d2d5-4374-88f8-5fe0d6d71e5e"),
-                    ProductPrice = 5.9m,
-                    Quantity = 3,
-                },
-                // Order 2 Products
-                new OrderProduct
-                {
-                    OrderProductId = Guid.Parse("abf95b0e-bdd5-40c1-aa46-1f5e7803d8c7"),
-                    ProductId = Guid.Parse("210518cb-b4c4-4d2f-9a53-f6520b534657"),
-                    OrderId = Guid.Parse("f1c9eae7-7ba4-482e-ba5f-f4a795b2c228"),
-                    ProductPrice = 25.5m,
-                    Quantity = 1,
-                },
-                new OrderProduct
-                {
-                    OrderProductId = Guid.Parse("73a0f514-65fb-4667-ba2a-df028fa6d6fd"),
-                    ProductId = Guid.Parse("33ad3125-c70f-485e-bf32-b90ad76e3ad4"),
-                    OrderId = Guid.Parse("f1c9eae7-7ba4-482e-ba5f-f4a795b2c228"),
-                    ProductPrice = 35.5m,
-                    Quantity = 2,
-                },
-                new OrderProduct
-                {
-                    OrderProductId = Guid.Parse("74b8ed87-7b15-4514-86de-3e39343d35d6"),
-                    ProductId = Guid.Parse("b106d590-002f-4b10-9237-b3954651efd0"),
-                    OrderId = Guid.Parse("f1c9eae7-7ba4-482e-ba5f-f4a795b2c228"),
-                    ProductPrice = 35.5m,
-                    Quantity = 1,
-                },
-                // Order 3 Products
-                new OrderProduct
-                {
-                    OrderProductId = Guid.Parse("6b05c920-0e45-44e7-af46-dc6dcf332b18"),
-                    ProductId = Guid.Parse("7b88a4f8-ee9f-44f7-99ef-e084da0c8ee9"),
-                    OrderId = Guid.Parse("b0cd279d-5316-45b5-8c47-fcd3cb707cb2"),
-                    ProductPrice = 12m,
-                    Quantity = 1,
-                },
-                new OrderProduct
-                {
-                    OrderProductId = Guid.Parse("d20a0ae1-2b34-4b60-976e-4ec6a34d393f"),
-                    ProductId = Guid.Parse("4963d195-33e0-4718-9c0c-f7db68678917"),
-                    OrderId = Guid.Parse("b0cd279d-5316-45b5-8c47-fcd3cb707cb2"),
-                    ProductPrice = 5.9m,
-                    Quantity = 1,
-                },
-                new OrderProduct
-                {
-                    OrderProductId = Guid.Parse("045b27bf-43e9-4d08-b192-67dc4d4d4c65"),
-                    ProductId = Guid.Parse("210518cb-b4c4-4d2f-9a53-f6520b534657"),
-                    OrderId = Guid.Parse("b0cd279d-5316-45b5-8c47-fcd3cb707cb2"),
-                    ProductPrice = 25.5m,
-                    Quantity = 2,
-                },
-            };
+                    new Category
+                    {
+                        CategoryId = Guid.Parse("bca83459-e31f-4ffc-9573-9245c9cbe6b7"),
+                        Name = "Skincare",
+                        Slug = "skincare",
+                        Description = "All things skincare",
+                        CreatedAt = new DateTime(2024, 4, 28, 22, 25, 25, DateTimeKind.Utc),
+                        AdminId = Guid.Parse("02c18f24-d667-4c07-8c4f-454dea50c115")
+                    },
+                    new Category
+                    {
+                        CategoryId = Guid.Parse("c94d673b-be8d-4b1f-8a36-cbd6ed765644"),
+                        Name = "Makeup",
+                        Slug = "makeup",
+                        Description = "All kinds of makeup",
+                        CreatedAt = new DateTime(2024, 4, 28, 22, 25, 25, DateTimeKind.Utc),
+                        AdminId = Guid.Parse("02c18f24-d667-4c07-8c4f-454dea50c115")
+                    },
+                    new Category
+                    {
+                        CategoryId = Guid.Parse("9c506bbf-0fd7-43af-9507-40fb32d8bdbd"),
+                        Name = "Haircare",
+                        Slug = "haircare",
+                        Description = "Haircare products",
+                        CreatedAt = new DateTime(2024, 4, 28, 23, 25, 25, DateTimeKind.Utc),
+                        AdminId = Guid.Parse("02c18f24-d667-4c07-8c4f-454dea50c115")
+                    },
+                    new Category
+                    {
+                        CategoryId = Guid.Parse("fafbdf01-de53-486b-9e4b-5b501cc8369e"),
+                        Name = "Fragrance",
+                        Slug = "fragrance",
+                        Description = "Perfumes and fragrances",
+                        CreatedAt = new DateTime(2024, 4, 28, 22, 25, 25, DateTimeKind.Utc),
+                        AdminId = Guid.Parse("02c18f24-d667-4c07-8c4f-454dea50c115")
+                    }
+                };
 
-            foreach (OrderProduct o in orderProducts)
-            {
-                context.OrderProducts.Add(o);
-            }
-        }
-
-        // if no orders found add these
-        if (!context.Orders.Any())
-        {
-            var orders = new List<Order>
-            {
-                // Order 1
-                new Order
+                foreach (Category c in categories)
                 {
-                    OrderId = Guid.Parse("d043296e-d2d5-4374-88f8-5fe0d6d71e5e"),
-                    AddressId = Guid.Parse("cfb3ff24-82db-492e-b7bb-1a02727bc399"),
-                    CreatedAt = DateTime.UtcNow,
-                    CustomerId = Guid.Parse("feee9ca6-fd69-46cf-a990-64db26780922"),
-                },
-                // Order 2
-                new Order
-                {
-                    OrderId = Guid.Parse("f1c9eae7-7ba4-482e-ba5f-f4a795b2c228"),
-                    AddressId = Guid.Parse("cfb3ff24-82db-492e-b7bb-1a02727bc399"),
-                    CreatedAt = DateTime.UtcNow,
-                    CustomerId = Guid.Parse("12295810-446c-4ef3-b5f9-8b7ec0a81e88"),
-                },
-                // Order 3
-                new Order
-                {
-                    OrderId = Guid.Parse("b0cd279d-5316-45b5-8c47-fcd3cb707cb2"),
-                    AddressId = Guid.Parse("cfb3ff24-82db-492e-b7bb-1a02727bc399"),
-                    CreatedAt = DateTime.UtcNow,
-                    CustomerId = Guid.Parse("a470781d-df28-4a68-b5f4-9b259b4b69d9"),
+                    context.Categories.Add(c);
                 }
-            };
-
-            foreach (Order o in orders)
-            {
-                context.Orders.Add(o);
             }
-        }
 
-        // if no reviews found add these
-        if (!context.Reviews.Any())
-        {
-            var reviews = new List<Review>
+            // if no products found add these
+            if (!context.Products.Any())
             {
-                // Review 1
-                new Review
-                {
-                    ReviewId = Guid.Parse("e4f95d92-575f-48da-a001-1f99c7d2d799"),
-                    Comment = "Great product!",
-                    OrderId = Guid.Parse("d043296e-d2d5-4374-88f8-5fe0d6d71e5e"),
-                    CustomerId = Guid.Parse("feee9ca6-fd69-46cf-a990-64db26780922"),
-                    ProductId = Guid.Parse("7b88a4f8-ee9f-44f7-99ef-e084da0c8ee9"),
-                    Rating = 5,
-                },
-                // Review 2
-                new Review
-                {
-                    ReviewId = Guid.Parse("189b91f7-1c57-4684-91cc-5baf7e4d3784"),
-                    Comment = "Fast delivery!",
-                    OrderId = Guid.Parse("f1c9eae7-7ba4-482e-ba5f-f4a795b2c228"),
-                    CustomerId = Guid.Parse("12295810-446c-4ef3-b5f9-8b7ec0a81e88"),
-                    ProductId = Guid.Parse("210518cb-b4c4-4d2f-9a53-f6520b534657"),
-                    Rating = 4,
-                },
-                // Review 3
-                new Review
-                {
-                    ReviewId = Guid.Parse("3c477a6c-ba9c-45d1-bab8-5c656d09de12"),
-                    Comment = "Not as described.",
-                    OrderId = Guid.Parse("f1c9eae7-7ba4-482e-ba5f-f4a795b2c228"),
-                    CustomerId = Guid.Parse("12295810-446c-4ef3-b5f9-8b7ec0a81e88"),
-                    ProductId = Guid.Parse("33ad3125-c70f-485e-bf32-b90ad76e3ad4"),
-                    Rating = 2,
-                },
-                // Review 4
-                new Review
-                {
-                    ReviewId = Guid.Parse("1f63a23a-4f55-4e69-bfe0-23830bdc44b0"),
-                    Comment = "Good quality, thank you!",
-                    OrderId = Guid.Parse("b0cd279d-5316-45b5-8c47-fcd3cb707cb2"),
-                    CustomerId = Guid.Parse("a470781d-df28-4a68-b5f4-9b259b4b69d9"),
-                    ProductId = Guid.Parse("7b88a4f8-ee9f-44f7-99ef-e084da0c8ee9"),
-                    Rating = 4,
-                },
-                // Review 5
-                new Review
-                {
-                    ReviewId = Guid.Parse("8aa7e85a-c9c5-4c92-b6bc-3f401c48d04d"),
-                    Comment = "Nice planner stickers!",
-                    OrderId = Guid.Parse("b0cd279d-5316-45b5-8c47-fcd3cb707cb2"),
-                    CustomerId = Guid.Parse("a470781d-df28-4a68-b5f4-9b259b4b69d9"),
-                    ProductId = Guid.Parse("4963d195-33e0-4718-9c0c-f7db68678917"),
-                    Rating = 4,
-                },
-            };
+                var products = new List<Product>();
+                var categoryIds = context.Categories.Select(c => c.CategoryId).ToList();
 
-            foreach (Review r in reviews)
-            {
-                context.Reviews.Add(r);
+                foreach (var categoryId in categoryIds)
+                {
+                    for (int i = 1; i <= 20; i++)
+                    {
+                        products.Add(new Product
+                        {
+                            ProductId = Guid.NewGuid(),
+                            Name = $"Product {i}",
+                            Slug = $"product-{i}",
+                            Price = 50 + i,
+                            Description = $"This is the description for Product {i}.",
+                            StockQuantity = 100 + i,
+                            SKU = $"BB-PROD-{i:D3}",
+                            ImgUrl = $"product-{i}.webp",
+                            CreatedAt = new DateTime(2024, 4, 29, 15, 25, 25, DateTimeKind.Utc),
+                            CategoryId = categoryId,
+                            AdminId = Guid.Parse("02c18f24-d667-4c07-8c4f-454dea50c115")
+                        });
+                    }
+                }
+
+                foreach (Product p in products)
+                {
+                    context.Products.Add(p);
+                }
             }
+
+            // if no order products found add these
+            if (!context.OrderProducts.Any())
+            {
+                var orderProducts = new List<OrderProduct>();
+                var productIds = context.Products.Select(p => p.ProductId).ToList();
+                var orderIds = context.Orders.Select(o => o.OrderId).ToList();
+
+                foreach (var orderId in orderIds)
+                {
+                    for (int i = 0; i < 5; i++)
+                    {
+                        orderProducts.Add(new OrderProduct
+                        {
+                            OrderProductId = Guid.NewGuid(),
+                            ProductId = productIds[i % productIds.Count],
+                            OrderId = orderId,
+                            ProductPrice = 50 + (i % productIds.Count),
+                            Quantity = 1 + (i % 5)
+                        });
+                    }
+                }
+
+                foreach (OrderProduct o in orderProducts)
+                {
+                    context.OrderProducts.Add(o);
+                }
+            }
+
+            // if no orders found add these
+            if (!context.Orders.Any())
+            {
+                var orders = new List<Order>();
+                var customerIds = context.Customers.Select(c => c.CustomerId).ToList();
+                var addressIds = context.Addresses.Select(a => a.AddressId).ToList();
+
+                for (int i = 1; i <= 20; i++)
+                {
+                    orders.Add(new Order
+                    {
+                        OrderId = Guid.NewGuid(),
+                        AddressId = addressIds[i % addressIds.Count],
+                        CreatedAt = DateTime.UtcNow,
+                        CustomerId = customerIds[i % customerIds.Count],
+                    });
+                }
+
+                foreach (Order o in orders)
+                {
+                    context.Orders.Add(o);
+                }
+            }
+
+            // if no reviews found add these
+            if (!context.Reviews.Any())
+            {
+                var reviews = new List<Review>();
+                var customerIds = context.Customers.Select(c => c.CustomerId).ToList();
+                var productIds = context.Products.Select(p => p.ProductId).ToList();
+
+                for (int i = 1; i <= 20; i++)
+                {
+                    reviews.Add(new Review
+                    {
+                        ReviewId = Guid.NewGuid(),
+                        Comment = $"This is a review for Product {i}.",
+                        OrderId = context.Orders.FirstOrDefault().OrderId,
+                        CustomerId = customerIds[i % customerIds.Count],
+                        ProductId = productIds[i % productIds.Count],
+                        Rating = (i % 5) + 1,
+                    });
+                }
+
+                foreach (Review r in reviews)
+                {
+                    context.Reviews.Add(r);
+                }
+            }
+
+            context.SaveChanges();
         }
-
-
-        context.SaveChanges();
     }
 }

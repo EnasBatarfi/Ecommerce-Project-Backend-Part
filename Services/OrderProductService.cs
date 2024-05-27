@@ -71,6 +71,7 @@ public class OrderProductService
         {
             _dbContext.OrderProducts.Remove(orderProductToRemove);
             await _dbContext.SaveChangesAsync();
+            await UpdateOrderPrice(orderProductToRemove.OrderId);
             return true;
         }
 

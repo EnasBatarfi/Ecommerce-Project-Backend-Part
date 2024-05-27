@@ -4,6 +4,7 @@ using Backend.Helpers;
 using Backend.Models;
 using Backend.Dtos;
 using Microsoft.IdentityModel.Tokens;
+using SendGrid.Helpers.Errors.Model;
 
 namespace Backend.Services;
 
@@ -26,6 +27,29 @@ public class AddressService
 
         return addresses;
     }
+    public async Task<IEnumerable<Address>> GetAllCustomerAddressService(
+     string customerId,
+     int pageNumber,
+     int pageSize
+)
+    {
+        var query = _dbContext.Addresses.AsQueryable();
+        var customerQuery = _dbContext.Customers.AsQueryable();
+        var customer = await customerQuery.FirstOrDefaultAsync(c => c.CustomerId.ToString() == customerId);
+
+        if (customer == null)
+        {
+            throw new NotFoundException($"No Customer Found With Id: {customerId}");
+        }
+        query = query.Where(p => p.CustomerId == customer.CustomerId);
+
+        var addresses = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return addresses;
+    }
 
 
     public async Task<Address?> GetAddressById(Guid addressId)
@@ -36,6 +60,7 @@ public class AddressService
 
     public async Task<Address> CreateAddressService(Address newAddress)
     {
+
         // Check if the address name already exists for the customer
         var existingAddress = await _dbContext.Addresses.FirstOrDefaultAsync(a => a.CustomerId == newAddress.CustomerId && a.Name == newAddress.Name);
 
@@ -88,5 +113,9 @@ public class AddressService
     public async Task<int> GetTotalAddressCount()
     {
         return await _dbContext.Addresses.CountAsync();
+    }
+    public async Task<int> GetTotalCustomerAddressCount(string customerId)
+    {
+        return await _dbContext.Addresses.CountAsync(a => a.CustomerId.ToString() == customerId);
     }
 }

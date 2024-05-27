@@ -10,8 +10,8 @@ using Backend.Dtos;
 
 namespace Backend.Controllers;
 
-[ApiController]
-[Route("/api/address")]
+[Authorize]
+[Route("/api/addresses")]
 public class AddressController : ControllerBase
 {
     private readonly AddressService _addressService;
@@ -22,12 +22,35 @@ public class AddressController : ControllerBase
     }
 
 
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAllAddress([FromQuery] int currentPage = 1, [FromQuery] int pageSize = 3)
     {
         var addresses = await _addressService.GetAllAddressService(currentPage, pageSize);
         int totalCount = await _addressService.GetTotalAddressCount();
+
+        if (totalCount < 1)
+        {
+            throw new NotFoundException("No Addresses To Display");
+        }
+
+        return ApiResponse.Success(
+            addresses,
+            "Addresses are returned successfully", new PaginationMeta
+            {
+                CurrentPage = currentPage,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            });
+
+    }
+
+    [Authorize]
+    [HttpGet("customer/{customerId}")]
+    public async Task<IActionResult> GetAllCustomerAddress(string customerId, [FromQuery] int currentPage = 1, [FromQuery] int pageSize = 3)
+    {
+        var addresses = await _addressService.GetAllCustomerAddressService(customerId, currentPage, pageSize);
+        int totalCount = await _addressService.GetTotalCustomerAddressCount(customerId);
 
         if (totalCount < 1)
         {
@@ -66,8 +89,9 @@ public class AddressController : ControllerBase
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> CreateAddress(Address newAddress)
+    public async Task<IActionResult> CreateAddress([FromBody] Address newAddress)
     {
+        Console.WriteLine("dekjde" + newAddress.CustomerId);
         var createdAddress = await _addressService.CreateAddressService(newAddress) ?? throw new Exception("Error when creating new address");
 
         return ApiResponse.Created<Address>(createdAddress, "Address is created successfully");

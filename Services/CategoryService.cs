@@ -94,4 +94,14 @@ public class CategoryService
     {
         return await _dbContext.Categories.CountAsync();
     }
+
+    public async Task<Category?> GetCategoryBySlugService(string slug)
+    {
+        return await _dbContext.Categories
+            .Include(c => c.Products)
+            .ThenInclude(r => r.Reviews)
+            .Include(p => p.Products)
+            .ThenInclude(o => o.OrderProducts)
+            .FirstOrDefaultAsync(c => c.Slug == slug);
+    }
 }

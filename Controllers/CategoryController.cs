@@ -102,4 +102,16 @@ public class CategoryController : ControllerBase
 
         return ApiResponse.Success("Category is deleted successfully");
     }
+
+    [AllowAnonymous]
+    [HttpGet("{slug}")]
+    public async Task<IActionResult> GetCategoryBySlug(string slug)
+    {
+        var category = await _categoryService.GetCategoryBySlugService(slug) ?? throw new NotFoundException($"No Category Found With Slug: {slug}");
+
+        return ApiResponse.Success(
+            category,
+            "Category is returned successfully"
+        );
+    }
 }
