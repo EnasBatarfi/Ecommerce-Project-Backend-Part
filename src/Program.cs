@@ -38,7 +38,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowOrigin", builder =>
     {
-        builder.WithOrigins("http://localhost:3000")
+        builder.WithOrigins("http://localhost:3000", "https://main--beautyblisswebsite.netlify.app")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials();
@@ -123,6 +123,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapGet("/", () =>
+{
+    return "Welcome to E-commerce Api";
+}).WithOpenApi();
 app.UseCors("AllowOrigin");
 app.UseHttpsRedirection();
 app.UseAuthentication();
