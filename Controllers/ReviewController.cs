@@ -44,6 +44,17 @@ public class ReviewController : ControllerBase
             });
     }
 
+    [AllowAnonymous]
+    [HttpGet("product/{productId}")]
+    public async Task<IActionResult> GetAllProductReviews(string productId)
+    {
+        var reviews = await _reviewService.GetAllProductReviewsService(productId);
+        return ApiResponse.Success(
+            reviews,
+            "Reviews are returned successfully");
+
+    }
+
 
     [AllowAnonymous]
     [HttpGet("{reviewId}")]

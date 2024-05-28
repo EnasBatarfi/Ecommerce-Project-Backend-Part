@@ -12,37 +12,38 @@ using Backend.Middleware;
 using Backend.Models;
 using Backend.Services;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-//add email sender
+// Add email sender
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(
-    builder.Configuration.GetConnectionString("LegendsConnection")
-).EnableSensitiveDataLogging());
+// Add DbContext with PostgreSQL
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("LegendsConnection"))
+           .EnableSensitiveDataLogging());
 
-//Add the authentication
-var configuration = builder.Configuration;
-var key = Encoding.ASCII.GetBytes(configuration["JwtSettings:Key"]);
-
-// Cors
+// Add CORS policy
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowOrigin", builder =>
     {
         builder.WithOrigins("http://localhost:3000")
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials();
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials();
     });
 });
+
+// Add authentication
+var configuration = builder.Configuration;
+var key = Encoding.ASCII.GetBytes(configuration["JwtSettings:Key"]);
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
+})
+.AddJwtBearer(options =>
 {
     options.RequireHttpsMetadata = false; // Set to true in production
     options.SaveToken = true;
@@ -59,13 +60,14 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
+
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
 });
 
-
+// Add scoped services
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<CustomerService>();
 builder.Services.AddScoped<AddressService>();
@@ -78,6 +80,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
 builder.Services.AddScoped<IPasswordHasher<Customer>, PasswordHasher<Customer>>();
 builder.Services.AddScoped<DbInitializer>();
+
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -86,11 +89,7 @@ builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwa
 
 var app = builder.Build();
 
-
-// TODO seeding DbInitializer 
-// adding data to the database if it doesn't exist, so we can all test the APIs
-// still testing this
-
+// Initialize database
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -107,24 +106,18 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-//
-
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// for cors
 app.UseCors("AllowOrigin");
-
 app.UseHttpsRedirection();
-
-// to use the auth and authorization -- it should be after the http and before the mapping
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers().WithParameterValidation();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.Run();

@@ -4,6 +4,7 @@ using Backend.Helpers;
 using Backend.Models;
 using Backend.Dtos;
 using Microsoft.IdentityModel.Tokens;
+using SendGrid.Helpers.Errors.Model;
 
 namespace Backend.Services;
 
@@ -25,6 +26,27 @@ public class ReviewService
             .ToListAsync();
         return reviews;
     }
+
+    public async Task<IEnumerable<Review>> GetAllProductReviewsService(
+ string productId
+)
+    {
+        var query = _dbContext.Reviews.AsQueryable();
+        var productQuery = _dbContext.Products.AsQueryable();
+        var product = await productQuery.FirstOrDefaultAsync(p => p.ProductId.ToString() == productId);
+
+        if (product == null)
+        {
+            throw new NotFoundException($"No Product Found With Id: {productId}");
+        }
+        query = query.Where(r => r.ProductId == product.ProductId);
+
+        var reviews = await query
+            .ToListAsync();
+
+        return reviews;
+    }
+
 
 
     public async Task<Review?> GetReviewById(Guid reviewId)
