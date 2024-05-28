@@ -8,18 +8,22 @@ namespace Backend.Services
 {
     public class AuthService
     {
-        private readonly IConfiguration _configuration;
 
-        public AuthService(IConfiguration configuration)
+        public AuthService()
         {
-            _configuration = configuration;
         }
 
 
         public string GenerateJwtToken(LoginUserDto loginRequest)
         {
+            // Get JWT settings from environment variables
+            var jwtIssuer = Environment.GetEnvironmentVariable("Jwt__Issuer") ?? throw new InvalidOperationException("JWT Issuer is missing in environment variables.");
+            var jwtAudience = Environment.GetEnvironmentVariable("Jwt__Audience") ?? throw new InvalidOperationException("JWT Audience is missing in environment variables.");
+            var jwtKey = Environment.GetEnvironmentVariable("Jwt__Key") ?? throw new InvalidOperationException("JWT Key is missing in environment variables.");
+
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["JwtSettings:Key"]);
+
+            var key = Encoding.ASCII.GetBytes(jwtKey);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -30,8 +34,8 @@ namespace Backend.Services
                 }),
                 Expires = DateTime.UtcNow.AddHours(8),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                Issuer = _configuration["JwtSettings:Issuer"],
-                Audience = _configuration["JwtSettings:Audience"],
+                Issuer = jwtIssuer,
+                Audience = jwtAudience,
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);

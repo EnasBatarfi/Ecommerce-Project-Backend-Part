@@ -14,12 +14,23 @@ using Backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Load env var from from .env file 
+DotNetEnv.Env.Load();
+
+// Get JWT settings from environment variables
+var jwtIssuer = Environment.GetEnvironmentVariable("Jwt__Issuer") ?? throw new InvalidOperationException("JWT Issuer is missing in environment variables.");
+var jwtAudience = Environment.GetEnvironmentVariable("Jwt__Audience") ?? throw new InvalidOperationException("JWT Audience is missing in environment variables.");
+var jwtKey = Environment.GetEnvironmentVariable("Jwt__Key") ?? throw new InvalidOperationException("JWT Key is missing in environment variables.");
+
+// Get the database connection string from environment variables
+var legendsConnection = Environment.GetEnvironmentVariable("LegendsConnection") ?? throw new InvalidOperationException("Legends Connection is missing in environment variables.");
+
 // Add email sender
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 // Add DbContext with PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("LegendsConnection"))
+    options.UseNpgsql(legendsConnection)
            .EnableSensitiveDataLogging());
 
 // Add CORS policy
@@ -36,7 +47,7 @@ builder.Services.AddCors(options =>
 
 // Add authentication
 var configuration = builder.Configuration;
-var key = Encoding.ASCII.GetBytes(configuration["JwtSettings:Key"]);
+var key = Encoding.ASCII.GetBytes(jwtKey);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -53,8 +64,8 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidIssuer = configuration["JwtSettings:Issuer"],
-        ValidAudience = configuration["JwtSettings:Audience"],
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
         ClockSkew = TimeSpan.Zero
     };
 });

@@ -70,7 +70,7 @@ public class CategoryController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{categoryId}")]
-    public async Task<IActionResult> UpdateCategory(string categoryId, CategoryDto updateCategory)
+    public async Task<IActionResult> UpdateCategory(string categoryId, [FromBody] CategoryDto updateCategory)
     {
         if (!Guid.TryParse(categoryId, out Guid categoryIdGuid))
         {

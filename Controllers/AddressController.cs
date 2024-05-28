@@ -100,7 +100,7 @@ public class AddressController : ControllerBase
 
     [Authorize]
     [HttpPut("{addressId}")]
-    public async Task<IActionResult> UpdateAddress(string addressId, AddressDto updateAddress)
+    public async Task<IActionResult> UpdateAddress(string addressId, [FromBody] AddressDto updateAddress)
     {
         if (!Guid.TryParse(addressId, out Guid addressIdGuid))
         {

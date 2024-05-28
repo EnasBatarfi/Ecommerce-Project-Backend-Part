@@ -33,7 +33,7 @@ public class ProductService
         // Apply filtering
         if (!string.IsNullOrEmpty(searchTerm))
         {
-            query = query.Where(p => p.Name.Contains(searchTerm) || p.Description.Contains(searchTerm));
+            query = query.Where(p => p.Name.ToLower().Contains(searchTerm.ToLower()) || p.Description.ToLower().Contains(searchTerm.ToLower()));
         }
 
         if (minPrice.HasValue)
@@ -98,7 +98,7 @@ public class ProductService
         // Apply filtering
         if (!string.IsNullOrEmpty(searchTerm))
         {
-            query = query.Where(p => p.Name.Contains(searchTerm) || p.Description.Contains(searchTerm));
+            query = query.Where(p => p.Name.ToLower().Contains(searchTerm.ToLower()) || p.Description.ToLower().Contains(searchTerm.ToLower()));
         }
 
         if (minPrice.HasValue)

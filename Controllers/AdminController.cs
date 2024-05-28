@@ -82,7 +82,7 @@ public class AdminController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{adminId}")]
-    public async Task<IActionResult> UpdateAdmin(string adminId, AdminDto updateAdmin)
+    public async Task<IActionResult> UpdateAdmin(string adminId, [FromBody] AdminDto updateAdmin)
     {
         if (!Guid.TryParse(adminId, out Guid adminIdGuid))
         {

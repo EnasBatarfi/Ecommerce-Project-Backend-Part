@@ -86,7 +86,7 @@ public class ReviewController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{reviewId}")]
-    public async Task<IActionResult> UpdateReview(string reviewId, ReviewDto updateReview)
+    public async Task<IActionResult> UpdateReview(string reviewId, [FromBody] ReviewDto updateReview)
     {
         if (!Guid.TryParse(reviewId, out Guid reviewIdGuid))
         {

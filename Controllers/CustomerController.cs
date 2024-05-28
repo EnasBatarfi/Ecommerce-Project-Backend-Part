@@ -93,7 +93,7 @@ public class CustomerController : ControllerBase
 
     [Authorize]
     [HttpPut("{customerId}")]
-    public async Task<IActionResult> UpdateCustomer(string customerId, CustomerDto updateCustomer)
+    public async Task<IActionResult> UpdateCustomer(string customerId, [FromBody] CustomerDto updateCustomer)
     {
         if (!Guid.TryParse(customerId, out Guid customerIdGuid))
         {

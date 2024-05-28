@@ -143,7 +143,7 @@ public class ProductController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{productId}")]
-    public async Task<IActionResult> UpdateProduct(string productId, ProductDto updateProduct)
+    public async Task<IActionResult> UpdateProduct(string productId, [FromBody] ProductDto updateProduct)
     {
         if (!Guid.TryParse(productId, out Guid productIdGuid))
         {
